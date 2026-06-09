@@ -19,4 +19,54 @@ public class Board {
     public int getColumns() {
         return columns;
     }
+    public Piece piece(int row, int column) {
+        if (!positionExists(row, column)) {
+            throw new BoardException("Erro acessando posição: a posição não existe.");
+        }
+        return pieces[row][column];
+    }
+
+    public Piece piece(Position position) {
+        return piece(position.getRow(), position.getColumn());
+    }
+
+    private boolean positionExists(int row, int column) {
+        return row >= 0 && row < rows && column >= 0 && column < columns;
+    }
+
+    public boolean positionExists(Position position) {
+        return positionExists(position.getRow(), position.getColumn());
+    }
+    public void placePiece(Piece piece, Position position) {
+
+    if (thereIsAPiece(position)) {
+        throw new BoardException(
+            "Já existe uma peça nessa posição."
+        );
+    }
+    pieces[position.getRow()][position.getColumn()] = piece;
+    piece.position = position;
+    }
+    public boolean thereIsAPiece(Position position) {
+        if (!positionExists(position)) {
+            throw new BoardException("Erro: A posição não existe.");
+        }
+        return piece(position) != null;
+    }
+    public Piece removePiece(Position position) {
+
+    if (!positionExists(position)) {
+        throw new BoardException(
+            "A posição não existe."
+        );
+    }
+    if (piece(position) == null) {
+        return null;
+    }
+    Piece aux = piece(position);
+    aux.position = null;
+    pieces[position.getRow()][position.getColumn()] = null;
+
+    return aux;
+    }
 }
