@@ -49,5 +49,25 @@ public class ChessMatch {
             8,
             new King(board, Color.BLACK)
         );
+        placeNewPiece(
+        'c',
+        1,
+            new Bishop(board, Color.WHITE)
+        );
+        placeNewPiece(
+        'f',
+        8,
+            new Bishop(board, Color.BLACK)
+        );
+        placeNewPiece(
+        'd',
+        1,
+            new Queen(board, Color.WHITE)
+        );
+        placeNewPiece(
+        'd',
+        8,
+            new Queen(board, Color.BLACK)
+        );
     }
 }
