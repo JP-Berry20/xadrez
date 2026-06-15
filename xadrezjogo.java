@@ -9,7 +9,7 @@ public class xadrezjogo {
         while (true) {
             try {
                 System.out.println();
-                UI.printBoard(
+                    UI.printBoard(
                     chessMatch.getPieces()
                 );
                 System.out.println();
@@ -22,11 +22,20 @@ public class xadrezjogo {
                     "Jogador: " +
                     chessMatch.getCurrentPlayer()
                 );
+                if (chessMatch.getCheck()) {
+                    System.out.println("XEQUE!");
+                }
                 System.out.println();
                 System.out.print("Origem: ");
 
                 ChessPosition source =
                     UI.readChessPosition(sc);
+                    boolean[][] possibleMoves =
+                        chessMatch.possibleMoves(source);
+                    UI.printBoard(
+                        chessMatch.getPieces(),
+                        possibleMoves
+                    );                
                 System.out.print("Destino: ");
 
                 ChessPosition target =

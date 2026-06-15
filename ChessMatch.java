@@ -5,9 +5,11 @@ public class ChessMatch {
     private Board board;
     private int turn;
     private Color currentPlayer;
+    private boolean check;
     private List<Piece> capturedPieces =
         new ArrayList<>();
-
+    private List<Piece> piecesOnTheBoard =
+        new ArrayList<>();
     public Board getBoard() {
         return board;
     }
@@ -43,6 +45,11 @@ public class ChessMatch {
         validateTargetPosition(source, target);
         Piece capturedPiece =
             makeMove(source, target);
+
+        check = testCheck(
+            opponent(currentPlayer)
+        );
+
         nextTurn();
         return (ChessPiece) capturedPiece;
     }
@@ -56,6 +63,7 @@ public class ChessMatch {
             new ChessPosition(column, row)
                 .toPosition()
         );
+        piecesOnTheBoard.add(piece);
     }
     private Piece makeMove(
         Position source,
@@ -124,6 +132,49 @@ public class ChessMatch {
         validateSourcePosition(position);
         return board.piece(position)
                     .possibleMoves();
+    }
+    public boolean getCheck() {
+        return check;
+    }
+    private ChessPiece king(Color color) {
+        for (Piece p : piecesOnTheBoard) {
+            ChessPiece cp = (ChessPiece) p;
+            if (cp.getColor() == color
+                    && cp instanceof King) {
+                return cp;
+            }
+        }
+        throw new IllegalStateException(
+            "Não existe rei da cor "
+            + color
+            + " no tabuleiro."
+        );
+    }
+    private boolean testCheck(Color color) {
+        Position kingPosition =
+            king(color)
+                .getChessPosition();
+        for (Piece p : piecesOnTheBoard) {
+            ChessPiece cp =
+                (ChessPiece) p;
+            if (cp.getColor() != color) {
+                boolean[][] mat =
+                    cp.possibleMoves();
+                if (mat[
+                    kingPosition.getRow()
+                ][
+                    kingPosition.getColumn()
+                ]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    private Color opponent(Color color) {
+        return (color == Color.WHITE)
+            ? Color.BLACK
+            : Color.WHITE;
     }
     private void initialSetup() {
         placeNewPiece('a', 1, new Rook(board, Color.WHITE));
