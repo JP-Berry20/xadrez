@@ -6,6 +6,7 @@ public class ChessMatch {
     private int turn;
     private Color currentPlayer;
     private boolean check;
+    private boolean checkMate;
     private List<Piece> capturedPieces =
         new ArrayList<>();
     private List<Piece> piecesOnTheBoard =
@@ -13,7 +14,6 @@ public class ChessMatch {
     public Board getBoard() {
         return board;
     }
-
     public ChessMatch() {
         board = new Board(8, 8);
         turn = 1;
@@ -35,24 +35,38 @@ public class ChessMatch {
     public ChessPiece performChessMove(
         ChessPosition sourcePosition,
         ChessPosition targetPosition) {
-
         Position source =
             sourcePosition.toPosition();
         Position target =
             targetPosition.toPosition();
         validateSourcePosition(source);
-
         validateTargetPosition(source, target);
+
         Piece capturedPiece =
             makeMove(source, target);
-
+        if (testCheck(currentPlayer)) {
+            undoMove(
+                source,
+                target,
+                capturedPiece
+            );
+            throw new ChessException(
+                "Você não pode se colocar em xeque."
+            );
+        }
         check = testCheck(
             opponent(currentPlayer)
         );
-
-        nextTurn();
+        if (testCheckMate(
+                opponent(currentPlayer))) {
+            checkMate = true;
+        }
+        else {
+            nextTurn();
+        }
         return (ChessPiece) capturedPiece;
     }
+    //cabo
     private void placeNewPiece(
         char column,
         int row,
@@ -78,6 +92,9 @@ public class ChessMatch {
 
         if (capturedPiece != null) {
             capturedPieces.add(capturedPiece);
+            piecesOnTheBoard.remove(
+                capturedPiece
+            );
         }
         return capturedPiece;
     }
@@ -175,6 +192,67 @@ public class ChessMatch {
         return (color == Color.WHITE)
             ? Color.BLACK
             : Color.WHITE;
+    }
+    private void undoMove(
+        Position source,
+        Position target,
+        Piece capturedPiece) {
+        ChessPiece p =
+            (ChessPiece) board.removePiece(target);
+        p.decreaseMoveCount();
+        board.placePiece(p, source);
+
+        if (capturedPiece != null) {
+            board.placePiece(
+                capturedPiece,
+                target
+            );
+            capturedPieces.remove(
+                capturedPiece
+            );
+            piecesOnTheBoard.add(
+                capturedPiece
+            );
+        }
+    }
+    public boolean getCheckMate() {
+        return checkMate;
+    }
+    private boolean testCheckMate(Color color) {
+        if (!testCheck(color)) {
+            return false;
+        }
+        for (Piece p : piecesOnTheBoard) {
+            ChessPiece cp = (ChessPiece) p;
+            if (cp.getColor() == color) {
+                boolean[][] mat =
+                    cp.possibleMoves();
+                for (int i = 0; i < board.getRows(); i++) {
+                    for (int j = 0; j < board.getColumns(); j++) {
+                        if (mat[i][j]) {
+                            Position source =
+                                cp.getChessPosition();
+
+                            Position target =
+                                new Position(i, j);
+                            Piece capturedPiece =
+                                makeMove(source, target);
+                            boolean testCheck =
+                                testCheck(color);
+                            undoMove(
+                                source,
+                                target,
+                                capturedPiece
+                            );
+                            if (!testCheck) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
     private void initialSetup() {
         placeNewPiece('a', 1, new Rook(board, Color.WHITE));
