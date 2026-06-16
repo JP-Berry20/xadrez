@@ -222,7 +222,9 @@ public class ChessMatch {
         if (!testCheck(color)) {
             return false;
         }
-        for (Piece p : piecesOnTheBoard) {
+        List<Piece> list =
+            new ArrayList<>(piecesOnTheBoard);
+        for (Piece p : list) {
             ChessPiece cp = (ChessPiece) p;
             if (cp.getColor() == color) {
                 boolean[][] mat =

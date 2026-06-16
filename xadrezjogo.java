@@ -6,7 +6,7 @@ public class xadrezjogo {
 
         ChessMatch chessMatch =
             new ChessMatch();
-        while (true) {
+        while (!chessMatch.getCheckMate()) {
             try {
                 System.out.println();
                     UI.printBoard(
@@ -52,5 +52,15 @@ public class xadrezjogo {
                 System.out.println(e.getMessage());
             }
         }
+        System.out.println();
+        UI.printBoard(
+            chessMatch.getPieces()
+        );
+        System.out.println();
+        System.out.println("XEQUE-MATE!");
+        System.out.println(
+            "Vencedor: " +
+            chessMatch.getCurrentPlayer()
+        );
     }
 }
