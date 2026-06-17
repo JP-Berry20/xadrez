@@ -81,9 +81,77 @@ public class King extends ChessPiece {
         );
         if (getBoard().positionExists(p)
             && canMove(p)) {
-
         mat[p.getRow()][p.getColumn()] = true;
+        }
+        if (getMoveCount() == 0) {
+            Position posT1 =
+                new Position(
+                    position.getRow(),
+                    position.getColumn() + 3
+                );
+            if (testRookCastling(posT1)) {
+                Position p1 =
+                    new Position(
+                        position.getRow(),
+                        position.getColumn() + 1
+                    );
+                Position p2 =
+                    new Position(
+                        position.getRow(),
+                        position.getColumn() + 2
+                    );
+                if (!getBoard().thereIsAPiece(p1)
+                        && !getBoard().thereIsAPiece(p2)) {
+                    mat[
+                        position.getRow()
+                    ][
+                        position.getColumn() + 2
+                    ] = true;
+                }
+            }
+            Position posT2 =
+                new Position(
+                    position.getRow(),
+                    position.getColumn() - 4
+                );
+            if (testRookCastling(posT2)) {
+                Position p1 =
+                    new Position(
+                        position.getRow(),
+                        position.getColumn() - 1
+                    );
+                Position p2 =
+                    new Position(
+                        position.getRow(),
+                        position.getColumn() - 2
+                    );
+                Position p3 =
+                    new Position(
+                        position.getRow(),
+                        position.getColumn() - 3
+                    );
+                if (!getBoard().thereIsAPiece(p1)
+                        && !getBoard().thereIsAPiece(p2)
+                        && !getBoard().thereIsAPiece(p3)) {
+                    mat[
+                        position.getRow()
+                    ][
+                        position.getColumn() - 2
+                    ] = true;
+                }
+            }
         }
         return mat;
     }
+    private boolean testRookCastling(
+        Position position) {
+        Piece p =
+            getBoard().piece(position);
+        return p != null
+            && p instanceof Rook
+            && ((ChessPiece) p).getColor()
+                == getColor()
+            && ((ChessPiece) p).getMoveCount()
+                == 0;
+        }
 }
