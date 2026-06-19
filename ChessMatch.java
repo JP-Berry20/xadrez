@@ -8,6 +8,7 @@ public class ChessMatch {
     private boolean check;
     private boolean checkMate;
     private ChessPiece enPassantVulnerable;
+    private ChessPiece promoted;
     private List<Piece> capturedPieces =
         new ArrayList<>();
     private List<Piece> piecesOnTheBoard =
@@ -47,6 +48,16 @@ public class ChessMatch {
             makeMove(source, target);
         ChessPiece movedPiece =
             (ChessPiece) board.piece(target);
+
+            promoted = null;
+            if (movedPiece instanceof Pawn) {
+                if ((movedPiece.getColor() == Color.WHITE
+                    && target.getRow() == 0)
+                    || (movedPiece.getColor() == Color.BLACK
+                    && target.getRow() == 7)) {
+                    promoted = movedPiece;
+                }
+            }
         if (testCheck(currentPlayer)) {
             undoMove(
                 source,
@@ -431,6 +442,55 @@ public class ChessMatch {
     }
     public ChessPiece getEnPassantVulnerable() {
         return enPassantVulnerable;
+    }
+    public ChessPiece getPromoted() {
+        return promoted;
+    }
+    public ChessPiece replacePromotedPiece(
+        String type) {
+        Position pos =
+            promoted.getChessPosition();
+        Piece p =
+            board.removePiece(pos);
+        piecesOnTheBoard.remove(p);
+        ChessPiece newPiece;
+        //a
+        if (type.equals("D")) {
+            newPiece =
+                new Queen(
+                    board,
+                    promoted.getColor()
+                );
+        }
+        else if (type.equals("T")) {
+            newPiece =
+                new Rook(
+                    board,
+                    promoted.getColor()
+                );
+        }
+        else if (type.equals("B")) {
+            newPiece =
+                new Bishop(
+                    board,
+                    promoted.getColor()
+                );
+        }
+        else {
+            newPiece =
+                new Knight(
+                    board,
+                    promoted.getColor()
+                );
+        }
+        board.placePiece(
+            newPiece,
+            pos
+        );
+        piecesOnTheBoard.add(
+            newPiece
+        );
+        return newPiece;
     }
     private void initialSetup() {
         placeNewPiece('a', 1, new Rook(board, Color.WHITE));

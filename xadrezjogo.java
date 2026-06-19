@@ -44,6 +44,27 @@ public class xadrezjogo {
                     source,
                     target
                 );
+                if (chessMatch.getPromoted() != null) {
+                    String type;
+                    do {
+                        System.out.print(
+                            "Promover para qual peça? (dama = D)/(torre = T)/(bispo = B)/(Cavalo = C): "
+                        );
+                        type =
+                            sc.nextLine()
+                            .toUpperCase();
+
+                    } while (
+                        !type.equals("D")
+                        && !type.equals("T")
+                        && !type.equals("B")
+                        && !type.equals("C")
+                    );
+
+                    chessMatch.replacePromotedPiece(
+                        type
+                    );
+                }
             }
             catch (ChessException e) {
                 System.out.println(e.getMessage());
